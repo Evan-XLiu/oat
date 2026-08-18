@@ -1,0 +1,33 @@
+#!/bin/bash
+#PBS -N oat_preflight
+#PBS -j oe
+#PBS -l walltime=00:20:00
+#PBS -l select=1:ncpus=36:mpiprocs=1:ompthreads=36:ngpus=1
+
+set -euo pipefail
+
+cd /scratch/xuanweiliu/bimanual_tokenizer/oat
+source vanda/env.sh
+module load msingularity
+
+singularity exec --nv -e \
+  --bind "${OAT_WORKSPACE}:${OAT_WORKSPACE}" \
+  "${OAT_IMAGE}" \
+  bash -lc "
+    set -euo pipefail
+    cd '${OAT_REPO}'
+    '${OAT_VENV}/bin/python' - <<'PY'
+import platform
+import torch
+import oat
+
+print('Python:', platform.python_version())
+print('PyTorch:', torch.__version__)
+print('CUDA available:', torch.cuda.is_available())
+if not torch.cuda.is_available():
+    raise SystemExit('CUDA is not visible inside the container')
+print('GPU:', torch.cuda.get_device_name(0))
+print('GPU memory GiB:', round(torch.cuda.get_device_properties(0).total_memory / 1024**3, 1))
+print('OAT import: OK')
+PY
+  "

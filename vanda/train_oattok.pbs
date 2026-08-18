@@ -1,0 +1,34 @@
+#!/bin/bash
+#PBS -N bimanual_tok
+#PBS -j oe
+#PBS -l walltime=24:00:00
+#PBS -l select=1:ncpus=36:mpiprocs=1:ompthreads=36:ngpus=1
+
+# No `#PBS -P` is present intentionally: Vanda will charge the personal
+# allocation. Add `#PBS -P CFPxx-xx-nnn` only after `hpc project` reports it.
+
+set -euo pipefail
+
+cd /scratch/xuanweiliu/bimanual_tokenizer/oat
+source vanda/env.sh
+module load msingularity
+
+singularity exec --nv -e \
+  --bind "${OAT_WORKSPACE}:${OAT_WORKSPACE}" \
+  "${OAT_IMAGE}" \
+  bash -lc "
+    set -euo pipefail
+    cd '${OAT_REPO}'
+    export HYDRA_FULL_ERROR=1
+    export WANDB_MODE='${WANDB_MODE}'
+    export WANDB_DIR='${WANDB_DIR}'
+    export HF_HOME='${HF_HOME}'
+    export XDG_CACHE_HOME='${XDG_CACHE_HOME}'
+    '${OAT_VENV}/bin/accelerate' launch \
+      --num_machines 1 \
+      --num_processes 1 \
+      scripts/run_workspace.py \
+      --config-name=train_oattok \
+      task/tokenizer=libero/libero10 \
+      training.num_demo=500
+  "
