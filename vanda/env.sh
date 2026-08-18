@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 # Shared paths for OAT development on NUS Vanda.
-# This file intentionally does not set a PBS billing project. Until `hpc project`
-# lists a real CFP project, jobs should use the automatically assigned personal
-# allocation by omitting `#PBS -P`.
+# PBS billing is configured in each .pbs file. The starter jobs use auto_free
+# because the newly provisioned account may not yet have a personal project.
 
 export OAT_WORKSPACE="/scratch/${USER}/bimanual_tokenizer"
 export OAT_REPO="${OAT_WORKSPACE}/oat"

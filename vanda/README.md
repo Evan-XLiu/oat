@@ -5,9 +5,10 @@ This directory adapts OAT's Slurm examples to Vanda's PBS Pro scheduler.
 ## Naming and billing
 
 `bimanual_tokenizer` is the workspace and experiment name. It is not a Vanda
-billing project. The supplied PBS files omit `#PBS -P`, so Vanda uses the
-personal allocation. Add a real `#PBS -P ...` line only after `hpc project`
-lists that exact project identifier.
+billing project. The supplied starter PBS files explicitly use the `auto_free`
+queue because `personal-xuanweiliu` is not provisioned in Allocation Manager.
+Once `hpc project` lists a real project, remove `#PBS -q auto_free` and add a
+`#PBS -P ...` line containing that exact project identifier.
 
 ## Server setup
 
@@ -32,7 +33,10 @@ Do not install Python dependencies on the login node. Request a short GPU
 session and build the environment on that compute node:
 
 ```bash
-qsub -I -l select=1:ngpus=1 -l walltime=02:00:00
+qsub -I \
+  -q auto_free \
+  -l select=1:ngpus=1:ncpus=32:mem=240gb:gpu-type=nvidia \
+  -l walltime=02:00:00
 cd /scratch/$USER/bimanual_tokenizer/oat
 bash vanda/setup_env.sh
 exit
@@ -71,6 +75,9 @@ qstat -awn1
 
 Training runs in offline Weights & Biases mode by default, avoiding an API-key
 prompt in unattended jobs. Set up online W&B separately only when required.
+The free tier is best-effort: queue parameters can change, and inefficient or
+over-provisioned jobs may be terminated. Use a real project allocation for
+long-running development as soon as NUS provisions it.
 
 ## Important upstream status
 

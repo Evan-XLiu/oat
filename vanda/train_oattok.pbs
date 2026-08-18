@@ -1,11 +1,13 @@
 #!/bin/bash
 #PBS -N bimanual_tok
 #PBS -j oe
+#PBS -q auto_free
 #PBS -l walltime=24:00:00
-#PBS -l select=1:ncpus=36:mpiprocs=1:ompthreads=36:ngpus=1
+#PBS -l select=1:ncpus=32:mpiprocs=1:ompthreads=32:mem=240gb:ngpus=1:gpu-type=nvidia
 
-# No `#PBS -P` is present intentionally: Vanda will charge the personal
-# allocation. Add `#PBS -P CFPxx-xx-nnn` only after `hpc project` reports it.
+# This starter job uses Vanda's free tier because personal-xuanweiliu is not
+# provisioned yet. Once a real project exists, remove `#PBS -q auto_free` and
+# add `#PBS -P CFPxx-xx-nnn` using the exact identifier from `hpc project`.
 
 set -euo pipefail
 

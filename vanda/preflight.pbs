@@ -1,8 +1,9 @@
 #!/bin/bash
 #PBS -N oat_preflight
 #PBS -j oe
+#PBS -q auto_free
 #PBS -l walltime=00:20:00
-#PBS -l select=1:ncpus=36:mpiprocs=1:ompthreads=36:ngpus=1
+#PBS -l select=1:ncpus=32:mpiprocs=1:ompthreads=32:mem=240gb:ngpus=1:gpu-type=nvidia
 
 set -euo pipefail
 
