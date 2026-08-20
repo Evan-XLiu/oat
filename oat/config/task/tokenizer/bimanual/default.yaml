@@ -1,0 +1,17 @@
+name: bimanual
+task_name: bimanual
+
+shape_meta:
+  action:
+    shape: [14]
+
+dataset:
+  _target_: oat.dataset.bimanual_zarr_dataset.BimanualZarrDataset
+  zarr_path: data/bimanual/train.zarr
+  obs_keys: []
+  action_key: action
+  n_obs_steps: 0
+  n_action_steps: ${horizon}
+  right_arm_sign: ${right_arm_sign}
+  seed: ${seed}
+  val_ratio: 0.1
