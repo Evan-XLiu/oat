@@ -65,3 +65,35 @@ HYDRA_FULL_ERROR=1 uv run accelerate launch \
 ```
 
 The standard OAT files and LIBERO configurations remain unchanged.
+
+## Paired common/relative tokenizer
+
+The original fused implementation remains available through
+`train_bimanual_oattok`. A second implementation keeps common and relative
+features independent through register encoding, FSQ, and decoding:
+
+```bash
+HYDRA_FULL_ERROR=1 uv run accelerate launch \
+  scripts/run_workspace.py \
+  --config-name=train_paired_bimanual_oattok \
+  token_horizon=8 \
+  task.tokenizer.dataset.zarr_path=/path/to/train.zarr
+```
+
+Set `token_horizon` to `2`, `4`, or `8`. Internally this creates `K` common
+registers and `K` relative registers, but each common/relative code pair is
+mixed into one external token ID. The policy therefore sees exactly `K`
+tokens, not `2K` tokens.
+
+The default paired quantization splits the original four FSQ scalars into:
+
+```text
+common levels   [8, 5] -> vocabulary 40
+relative levels [5, 5] -> vocabulary 25
+paired vocabulary      -> 40 * 25 = 1000
+```
+
+For every position, `paired_id = common_id + 40 * relative_id`. This preserves
+the standard OAT vocabulary size, bit budget, and autoregressive token count.
+The paired tokenizer is therefore directly compatible with `OATPolicy`, which
+reads the exposed paired vocabulary size and predicts one paired ID per step.
