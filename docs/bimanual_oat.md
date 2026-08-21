@@ -80,10 +80,10 @@ HYDRA_FULL_ERROR=1 uv run accelerate launch \
   task.tokenizer.dataset.zarr_path=/path/to/train.zarr
 ```
 
-Set `token_horizon` to `2`, `4`, or `8`. Internally this creates `K` common
-registers and `K` relative registers, but each common/relative code pair is
-mixed into one external token ID. The policy therefore sees exactly `K`
-tokens, not `2K` tokens.
+Set `token_horizon` to `2`, `4`, `8`, or `16`. Internally this creates `K`
+common registers and `K` relative registers, but each common/relative code
+pair is mixed into one external token ID. The policy therefore sees exactly
+`K` tokens, not `2K` tokens.
 
 The default paired quantization splits the original four FSQ scalars into:
 

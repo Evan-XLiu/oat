@@ -68,7 +68,7 @@ def test_paired_fsq_has_standard_oat_vocabulary_and_is_invertible():
 def test_paired_tokenizer_exposes_k_tokens_for_k_plus_k_registers():
     samples = torch.randn(2, 8, 14)
 
-    for token_horizon in (2, 4, 8):
+    for token_horizon in (2, 4, 8, 16):
         tokenizer = make_tokenizer(token_horizon=token_horizon)
         (common_latents, relative_latents), paired_tokens = tokenizer.encode(
             samples
